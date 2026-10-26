@@ -5,24 +5,32 @@ import speech_recognition as sr
 
 
 class VoiceInput:
-    """Capture a spoken command and convert it to text."""
+    """Capture spoken commands and convert them to text."""
 
     def __init__(self, feedback=None):
-     self.feedback = feedback
-     self.recognizer = sr.Recognizer()
-     self.microphone = sr.Microphone()
+        self.feedback = feedback
+        self.recognizer = sr.Recognizer()
+        self.recognizer.dynamic_energy_threshold = True
+        self.recognizer.pause_threshold = 0.8
+        self.microphone = sr.Microphone()
+        self.calibrated = False
 
     def listen_for_command(self):
         """Listen once and return recognized text, or None if unclear."""
         try:
             with self.microphone as source:
-                print("Adjusting for background noise...")
-                self.recognizer.adjust_for_ambient_noise(
-                    source, duration=0.5
-                )
+                if not self.calibrated:
+                    print("Calibrating microphone. Please stay quiet...")
+                    self.recognizer.adjust_for_ambient_noise(
+                        source, duration=1
+                    )
+                    self.calibrated = True
+
                 print("Listening... speak a command.")
                 audio = self.recognizer.listen(
-                    source, timeout=5, phrase_time_limit=5
+                    source,
+                    timeout=7,
+                    phrase_time_limit=5,
                 )
 
             command = self.recognizer.recognize_google(audio)
@@ -30,9 +38,9 @@ class VoiceInput:
             return command.strip().lower()
 
         except sr.WaitTimeoutError:
-            print("No speech detected.")
+            print("No speech detected. Try again.")
         except sr.UnknownValueError:
-            print("Speech was unclear.")
+            print("Speech unclear. Please try again.")
         except sr.RequestError:
             print("Speech recognition service unavailable.")
         except OSError as error:
