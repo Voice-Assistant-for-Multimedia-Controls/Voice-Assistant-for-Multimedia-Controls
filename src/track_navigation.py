@@ -1,13 +1,25 @@
-"""Track navigation module — task owner: Shrinivas S J."""
+
+"""Track navigation module — owner: Shrinivas S J."""
 
 
 class TrackNavigation:
     """Provide next/previous track navigation."""
 
-    def next_track(self):
-        """TODO (Shrinivas): implement next-track navigation."""
-        raise NotImplementedError
+    def __init__(self, controller):
+        self.controller = controller
 
-    def previous_track(self):
-        """TODO (Shrinivas): implement previous-track navigation."""
-        raise NotImplementedError
+    def next_track(self) -> bool:
+        """Request the next track through the shared controller."""
+        try:
+            self.controller.next_track()
+            return True
+        except Exception:
+            return False
+
+    def previous_track(self) -> bool:
+        """Request the previous track through the shared controller."""
+        try:
+            self.controller.previous_track()
+            return True
+        except Exception:
+            return False
