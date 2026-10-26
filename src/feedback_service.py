@@ -1,13 +1,14 @@
-"""Feedback module — task owner: Shrinivas S J."""
+
+"""Command feedback module — owner: Shrinivas S J."""
 
 
 class FeedbackService:
-    """Provide user feedback after a command is processed."""
+    """Provide feedback when a voice command is processed."""
 
-    def say(self, message: str):
-        """TODO (Shrinivas): implement the feedback mechanism.
+    def say(self, message: str) -> bool:
+        """Display command feedback to the user."""
+        if not isinstance(message, str) or not message.strip():
+            return False
 
-        The submitted requirements may call for text or spoken feedback;
-        confirm the required behavior in the team's SRS and Test Plan.
-        """
-        raise NotImplementedError("Feedback has not been implemented yet.")
+        print(message)
+        return True
