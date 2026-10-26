@@ -1,7 +1,9 @@
+
 """Shared multimedia controller interface.
 
 Task owners should implement only their assigned methods and coordinate
-interfaces before merging. This file intentionally contains no action logic.
+interfaces before merging. This file contains basic Windows media-key
+actions for play, resume, and pause.
 """
 
 
@@ -9,16 +11,25 @@ class MultimediaController:
     """Interface for multimedia actions."""
 
     def play(self):
-        """TODO (Prajwal): implement play/resume behavior."""
-        raise NotImplementedError
+        """Play multimedia using the Windows media key."""
+        import pyautogui
+
+        pyautogui.press("playpause")
+        return "Play/resume media key sent."
 
     def resume(self):
-        """TODO (Prajwal): implement resume behavior."""
-        raise NotImplementedError
+        """Resume multimedia using the Windows media key."""
+        import pyautogui
+
+        pyautogui.press("playpause")
+        return "Play/resume media key sent."
 
     def pause(self):
-        """TODO (Prajwal): implement pause behavior."""
-        raise NotImplementedError
+        """Pause multimedia using the Windows media key."""
+        import pyautogui
+
+        pyautogui.press("playpause")
+        return "Pause media key sent."
 
     def next_track(self):
         """TODO (Shrinivas): implement next-track behavior."""

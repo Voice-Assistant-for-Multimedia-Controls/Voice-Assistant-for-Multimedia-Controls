@@ -1,8 +1,25 @@
+
 """Command handling module — task owner: Prajwal GT."""
 
 
 class CommandHandler:
     """Map recognized commands to the appropriate project action."""
+
+    COMMANDS = {
+        "play": "play",
+        "play music": "play",
+        "play the music": "play",
+        "resume": "resume",
+        "resume music": "resume",
+        "pause": "pause",
+        "pause music": "pause",
+        "next": "next",
+        "next track": "next",
+        "previous": "previous",
+        "previous track": "previous",
+        "volume up": "volume_up",
+        "volume down": "volume_down",
+    }
 
     def __init__(self, controller, feedback) -> None:
         self.controller = controller
@@ -14,9 +31,32 @@ class CommandHandler:
         return " ".join(command.lower().strip().split())
 
     def handle(self, command: str):
-        """TODO (Prajwal): implement predefined command recognition/routing.
+        """Recognize supported commands and route them safely."""
+        normalized = self.normalize(command or "")
 
-        Coordinate command names with teammates so each command maps to one
-        implementation. Handle unsupported or unclear commands safely.
-        """
-        raise NotImplementedError("Command handling has not been implemented yet.")
+        if not normalized:
+            return self.feedback.say(
+                "Unclear command. Please try again."
+            )
+
+        action_name = self.COMMANDS.get(normalized)
+
+        if action_name is None:
+            return self.feedback.say(
+                f"Unsupported command: '{normalized}'. No action taken."
+            )
+
+        action = getattr(self.controller, action_name, None)
+
+        if not callable(action):
+            return self.feedback.say(
+                f"Command '{normalized}' recognized, but its action "
+                "is not implemented yet."
+            )
+
+        result = action()
+
+        if result is not None:
+            return self.feedback.say(str(result))
+
+        return self.feedback.say(f"Command '{normalized}' executed.")
