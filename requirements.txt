@@ -1,0 +1,8 @@
+# Shared starter scaffold.
+# Add and pin packages only after the team agrees on the implementation choices.
+# Possible packages (confirm compatibility before adding):
+# SpeechRecognition
+# PyAudio
+# pyttsx3
+# opencv-python
+# mediapipe
