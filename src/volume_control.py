@@ -1,13 +1,19 @@
-"""Volume control module — task owner: Shreedhar R."""
+"""Software volume control using the host computer's media keys."""
 
 
 class VolumeControl:
-    """Provide volume up/down operations."""
+    """Control system media volume without an external hardware device."""
 
     def volume_up(self):
-        """TODO (Shreedhar): implement volume increase."""
-        raise NotImplementedError
+        """Increase the host computer's media volume."""
+        import pyautogui
+
+        pyautogui.press("volumeup")
+        return "Volume up media key sent."
 
     def volume_down(self):
-        """TODO (Shreedhar): implement volume decrease."""
-        raise NotImplementedError
+        """Decrease the host computer's media volume."""
+        import pyautogui
+
+        pyautogui.press("volumedown")
+        return "Volume down media key sent."

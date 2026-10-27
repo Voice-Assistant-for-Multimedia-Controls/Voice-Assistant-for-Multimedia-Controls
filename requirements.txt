@@ -1,8 +1,9 @@
 # Shared starter scaffold.
 # Add and pin packages only after the team agrees on the implementation choices.
-# Possible packages (confirm compatibility before adding):
-# SpeechRecognition
-# PyAudio
+# Runtime dependencies for voice input and media-key control:
 # pyttsx3
 # opencv-python
 # mediapipe
+pyautogui
+SpeechRecognition
+PyAudio

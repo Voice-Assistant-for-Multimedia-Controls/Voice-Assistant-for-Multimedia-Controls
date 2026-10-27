@@ -6,9 +6,14 @@ interfaces before merging. This file contains basic Windows media-key
 actions for play, resume, and pause.
 """
 
+from src.volume_control import VolumeControl
+
 
 class MultimediaController:
     """Interface for multimedia actions."""
+
+    def __init__(self, volume_control=None):
+        self.volume_control = volume_control or VolumeControl()
 
     def play(self):
         """Play multimedia using the Windows media key."""
@@ -40,9 +45,9 @@ class MultimediaController:
         raise NotImplementedError
 
     def volume_up(self):
-        """TODO (Shreedhar): implement volume-up behavior."""
-        raise NotImplementedError
+        """Increase media volume through the host computer's media keys."""
+        return self.volume_control.volume_up()
 
     def volume_down(self):
-        """TODO (Shreedhar): implement volume-down behavior."""
-        raise NotImplementedError
+        """Decrease media volume through the host computer's media keys."""
+        return self.volume_control.volume_down()

@@ -17,7 +17,6 @@ Voice-Assistant-for-Multimedia-Controls/
     ├── multimedia_controller.py
     ├── feedback_service.py
     ├── volume_control.py
-    ├── device_communication.py
     ├── track_navigation.py
     ├── gesture_control.py
     └── gesture_mapping.py
@@ -27,7 +26,7 @@ Voice-Assistant-for-Multimedia-Controls/
 
 - **Prajwal GT:** voice input, predefined voice-command detection/routing,
   play/resume, pause, and safe handling of unsupported commands.
-- **Shreedhar R:** volume up/down and Raspberry Pi/ESP device communication.
+- **Shreedhar R:** software volume up/down using the computer's media keys.
 - **Shrinivas S J:** next/previous track and command feedback.
 - **Sarang S Nair:** MediaPipe gesture recognition and gesture mapping.
 
@@ -47,8 +46,29 @@ if the team agrees to a documented change.
 
 ## Important
 
-- This scaffold is not yet a runnable voice assistant. The methods marked
-  `TODO` raise `NotImplementedError` until their owners implement them.
+- The voice-command loop and basic media controls are implemented. Other
+  features may still be incomplete; check for methods marked `TODO`.
 - Follow the submitted SRS, SAD, and Test Plan.
 - Record deviations from those documents and explain them in the final demo.
 - Add only the dependencies actually selected and used by the team.
+
+## Shreedhar R — completed volume-control contribution
+
+Implemented the assigned volume-up and volume-down commands as host-computer
+media-key actions using PyAutoGUI. The existing command handler routes spoken
+volume commands to the multimedia controller, which delegates to the volume
+control module. This replaces the proposed external-device communication
+approach with direct software control: no ESP32, Raspberry Pi, serial port, or
+other external controller is required.
+
+Added automated tests for both key mappings and repeated commands. The
+assistant was also tested with a live microphone: it recognized "volume up"
+and "volume down" and dispatched the corresponding media keys. The tests do
+not independently verify the Windows volume indicator or audible output.
+
+Install the project's listed dependencies and run the assistant:
+
+```powershell
+python -m pip install -r requirements.txt
+python main.py
+```
