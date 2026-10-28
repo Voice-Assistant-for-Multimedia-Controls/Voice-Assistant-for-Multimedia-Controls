@@ -1,9 +1,7 @@
 
 """Shared multimedia controller interface.
 
-Task owners should implement only their assigned methods and coordinate
-interfaces before merging. This file contains basic Windows media-key
-actions for play, resume, and pause.
+Supports playback, track navigation, and volume control.
 """
 
 from src.volume_control import VolumeControl
@@ -16,7 +14,7 @@ class MultimediaController:
         self.volume_control = volume_control or VolumeControl()
 
     def play(self):
-        """Play multimedia using the Windows media key."""
+        """Play or resume multimedia using the Windows media key."""
         import pyautogui
 
         pyautogui.press("playpause")
@@ -37,23 +35,23 @@ class MultimediaController:
         return "Pause media key sent."
 
     def next_track(self):
-        """Skip to the next track using the host computer's media key."""
+        """Skip to the next track using the system media key."""
         import pyautogui
 
         pyautogui.press("nexttrack")
         return "Next-track media key sent."
 
     def previous_track(self):
-        """Return to the previous track using the host computer's media key."""
+        """Return to the previous track using the system media key."""
         import pyautogui
 
         pyautogui.press("prevtrack")
         return "Previous-track media key sent."
 
     def volume_up(self):
-        """Increase media volume through the host computer's media keys."""
+        """Increase volume using the team's volume controller."""
         return self.volume_control.volume_up()
 
     def volume_down(self):
-        """Decrease media volume through the host computer's media keys."""
+        """Decrease volume using the team's volume controller."""
         return self.volume_control.volume_down()

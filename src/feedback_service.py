@@ -5,10 +5,10 @@
 class FeedbackService:
     """Provide feedback when a voice command is processed."""
 
-    def say(self, message: str) -> bool:
-        """Display command feedback to the user."""
+    def say(self, message: str) -> str:
+        """Display command feedback and return it."""
         if not isinstance(message, str) or not message.strip():
-            return False
+            return ""
 
-        print(message)
-        return True
+        print(f"Assistant: {message}")
+        return message
