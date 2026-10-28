@@ -37,12 +37,18 @@ class MultimediaController:
         return "Pause media key sent."
 
     def next_track(self):
-        """TODO (Shrinivas): implement next-track behavior."""
-        raise NotImplementedError
+        """Skip to the next track using the host computer's media key."""
+        import pyautogui
+
+        pyautogui.press("nexttrack")
+        return "Next-track media key sent."
 
     def previous_track(self):
-        """TODO (Shrinivas): implement previous-track behavior."""
-        raise NotImplementedError
+        """Return to the previous track using the host computer's media key."""
+        import pyautogui
+
+        pyautogui.press("prevtrack")
+        return "Previous-track media key sent."
 
     def volume_up(self):
         """Increase media volume through the host computer's media keys."""

@@ -66,6 +66,26 @@ assistant was also tested with a live microphone: it recognized "volume up"
 and "volume down" and dispatched the corresponding media keys. The tests do
 not independently verify the Windows volume indicator or audible output.
 
+## Software-only communication and continuous-operation checks
+
+The multimedia controller sends host-computer media-key events for play,
+resume, pause, next track, previous track, and volume changes. No external
+controller or other additional hardware is used for these media actions.
+`test_software_operations.py` replaces PyAutoGUI with a mock and supplies
+commands through a fake voice-input source, so it verifies key mapping,
+repeated commands, and continued listening after an empty recognition result
+without using a microphone or sending real key events.
+
+Run the software-only checks with:
+
+```powershell
+python -m unittest discover -v
+```
+
+These automated checks confirm that the application requests the expected
+host media-key events. They do not prove that a particular media player,
+Windows volume setting, speaker, or physical audio device responds to them.
+
 Install the project's listed dependencies and run the assistant:
 
 ```powershell
