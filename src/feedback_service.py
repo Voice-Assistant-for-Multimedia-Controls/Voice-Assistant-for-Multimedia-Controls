@@ -1,11 +1,14 @@
 
-"""Feedback module — text feedback for voice commands."""
+"""Command feedback module — owner: Shrinivas S J."""
 
 
 class FeedbackService:
-    """Display feedback after a command is processed."""
+    """Provide feedback when a voice command is processed."""
 
     def say(self, message: str) -> str:
-        """Print a message and return it."""
+        """Display command feedback and return it."""
+        if not isinstance(message, str) or not message.strip():
+            return ""
+
         print(f"Assistant: {message}")
         return message

@@ -9,25 +9,22 @@ class CommandHandler:
         "play": "play",
         "play music": "play",
         "play the music": "play",
-
         "resume": "resume",
         "resume music": "resume",
-
         "pause": "pause",
         "pause music": "pause",
-
+        "stop": "pause",
+        "stop music": "pause",
         "next": "next_track",
         "next track": "next_track",
         "next song": "next_track",
         "play next": "next_track",
         "play next song": "next_track",
-
         "previous": "previous_track",
         "previous track": "previous_track",
         "previous song": "previous_track",
         "play previous": "previous_track",
         "play previous song": "previous_track",
-
         "volume up": "volume_up",
         "volume down": "volume_down",
     }

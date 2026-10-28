@@ -1,15 +1,20 @@
 
 """Shared multimedia controller interface.
 
-Supports playback controls and YouTube playlist navigation.
+Supports playback, track navigation, and volume control.
 """
+
+from src.volume_control import VolumeControl
 
 
 class MultimediaController:
     """Interface for multimedia actions."""
 
+    def __init__(self, volume_control=None):
+        self.volume_control = volume_control or VolumeControl()
+
     def play(self):
-        """Play multimedia using the Windows media key."""
+        """Play or resume multimedia using the Windows media key."""
         import pyautogui
 
         pyautogui.press("playpause")
@@ -23,52 +28,30 @@ class MultimediaController:
         return "Play/resume media key sent."
 
     def pause(self):
-      """Pause multimedia using the Windows media key."""
-      import pyautogui
+        """Pause multimedia using the Windows media key."""
+        import pyautogui
 
-      pyautogui.press("playpause")
-      return "Pause media key sent."
+        pyautogui.press("playpause")
+        return "Pause media key sent."
 
     def next_track(self):
-        """Navigate to the next YouTube playlist video."""
-        import time
+        """Skip to the next track using the system media key."""
         import pyautogui
-        import pygetwindow as gw
 
-        windows = gw.getWindowsWithTitle("Firefox")
-        if not windows:
-            return "Firefox window not found."
-
-        try:
-            windows[0].activate()
-            time.sleep(0.5)
-            pyautogui.hotkey("shift", "n")
-            return "Requested next YouTube playlist video."
-        except Exception as error:
-            return f"Could not activate Firefox: {error}"
+        pyautogui.press("nexttrack")
+        return "Next-track media key sent."
 
     def previous_track(self):
-        """Navigate to the previous YouTube playlist video."""
-        import time
+        """Return to the previous track using the system media key."""
         import pyautogui
-        import pygetwindow as gw
 
-        windows = gw.getWindowsWithTitle("Firefox")
-        if not windows:
-            return "Firefox window not found."
-
-        try:
-            windows[0].activate()
-            time.sleep(0.5)
-            pyautogui.hotkey("shift", "p")
-            return "Requested previous YouTube playlist video."
-        except Exception as error:
-            return f"Could not activate Firefox: {error}"
+        pyautogui.press("prevtrack")
+        return "Previous-track media key sent."
 
     def volume_up(self):
-        """TODO (Shreedhar): implement volume-up behavior."""
-        raise NotImplementedError
+        """Increase volume using the team's volume controller."""
+        return self.volume_control.volume_up()
 
     def volume_down(self):
-        """TODO (Shreedhar): implement volume-down behavior."""
-        raise NotImplementedError
+        """Decrease volume using the team's volume controller."""
+        return self.volume_control.volume_down()
