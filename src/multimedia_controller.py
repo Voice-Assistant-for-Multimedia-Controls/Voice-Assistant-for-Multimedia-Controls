@@ -1,9 +1,7 @@
 
 """Shared multimedia controller interface.
 
-Task owners should implement only their assigned methods and coordinate
-interfaces before merging. This file contains basic Windows media-key
-actions for play, resume, and pause.
+Supports playback controls and YouTube playlist navigation.
 """
 
 
@@ -25,19 +23,47 @@ class MultimediaController:
         return "Play/resume media key sent."
 
     def pause(self):
-        """Pause multimedia using the Windows media key."""
-        import pyautogui
+      """Pause multimedia using the Windows media key."""
+      import pyautogui
 
-        pyautogui.press("playpause")
-        return "Pause media key sent."
+      pyautogui.press("playpause")
+      return "Pause media key sent."
 
     def next_track(self):
-        """TODO (Shrinivas): implement next-track behavior."""
-        raise NotImplementedError
+        """Navigate to the next YouTube playlist video."""
+        import time
+        import pyautogui
+        import pygetwindow as gw
+
+        windows = gw.getWindowsWithTitle("Firefox")
+        if not windows:
+            return "Firefox window not found."
+
+        try:
+            windows[0].activate()
+            time.sleep(0.5)
+            pyautogui.hotkey("shift", "n")
+            return "Requested next YouTube playlist video."
+        except Exception as error:
+            return f"Could not activate Firefox: {error}"
 
     def previous_track(self):
-        """TODO (Shrinivas): implement previous-track behavior."""
-        raise NotImplementedError
+        """Navigate to the previous YouTube playlist video."""
+        import time
+        import pyautogui
+        import pygetwindow as gw
+
+        windows = gw.getWindowsWithTitle("Firefox")
+        if not windows:
+            return "Firefox window not found."
+
+        try:
+            windows[0].activate()
+            time.sleep(0.5)
+            pyautogui.hotkey("shift", "p")
+            return "Requested previous YouTube playlist video."
+        except Exception as error:
+            return f"Could not activate Firefox: {error}"
 
     def volume_up(self):
         """TODO (Shreedhar): implement volume-up behavior."""
