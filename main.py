@@ -14,7 +14,10 @@ from src.voice_input import VoiceInput
 def run_assistant(voice_input, handler):
     """Listen continuously for voice commands."""
     print("\n=== Voice Assistant: Voice + Gesture Controls ===")
-    print("Commands: play music, pause music, resume, next song")
+    print(
+    "Commands: play music, pause music, resume, "
+    "next song, previous song, volume up, volume down"
+)
     print("Say 'exit assistant' or 'quit' to stop.\n")
 
     while True:
