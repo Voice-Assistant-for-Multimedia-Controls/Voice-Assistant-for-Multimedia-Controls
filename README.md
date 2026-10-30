@@ -105,6 +105,27 @@ or a microphone.
 
 `FeedbackService.track_changed(direction, success)` speaks the result of a next/previous track request.
 
+## Prajwal GT — Voice Input and Command Handling
+
+Implemented the voice-input and predefined voice-command handling functionality for the Voice Assistant for Multimedia Controls project.
+
+Integrated speech recognition to capture spoken commands through the microphone and convert them into text for processing. Implemented predefined command mappings in `src/command_handler.py` to identify recognized phrases and route them to the appropriate multimedia controller actions.
+
+Added command normalization to handle capitalization, leading and trailing spaces, and repeated spaces.
+
+Implemented support for play, resume, pause, stop music, next track, previous track, volume up, and volume down commands through the shared command handler.
+
+Added safe handling for empty input, unsupported commands, and unavailable controller actions. Unsupported phrases generate feedback without executing an invalid action.
+
+The main files involved in the voice-command functionality are:
+
+- `src/voice_input.py` — Microphone input and speech recognition.
+- `src/command_handler.py` — Command normalization, recognition, and routing.
+- `src/multimedia_controller.py` — Playback-control integration.
+- `main.py` — Voice-assistant initialization and continuous listening.
+
+Live microphone testing confirmed recognition of the "play music" command and dispatch to the multimedia controller. Actual playback behavior in YouTube and Firefox requires further verification.
+
 ## Supported voice commands
 
 | Action | Phrases |
