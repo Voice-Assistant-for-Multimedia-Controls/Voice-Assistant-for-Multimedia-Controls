@@ -92,3 +92,13 @@ Install the project's listed dependencies and run the assistant:
 python -m pip install -r requirements.txt
 python main.py
 ```
+## Shrinivas S J — track navigation and feedback
+
+Implemented next/previous track navigation routed through the shared
+multimedia controller, with logging for failures. Added a feedback
+service that prints and speaks command results, with configurable
+voice rate and volume and a success/failure `report()` helper.
+
+Added unit tests for both modules in `tests/`. The tests mock the
+controller and the text-to-speech engine, so they run without audio
+or a microphone.
