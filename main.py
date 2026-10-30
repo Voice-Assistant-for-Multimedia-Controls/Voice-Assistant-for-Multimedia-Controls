@@ -11,40 +11,48 @@ from src.multimedia_controller import MultimediaController
 from src.voice_input import VoiceInput
 
 
-def run_assistant(voice_input, handler):
-    """Listen continuously for voice commands."""
+def run_assistant(voice_input, handler, stop_event):
+    """Listen continuously until an exit command or shutdown request."""
     print("\n=== Voice Assistant: Voice + Gesture Controls ===")
     print(
-    "Commands: play music, pause music, resume, "
-    "next song, previous song, volume up, volume down"
-)
+        "Commands: play music, pause music, resume, "
+        "next song, previous song, volume up, volume down"
+    )
     print("Say 'exit assistant' or 'quit' to stop.\n")
 
-    while True:
-        try:
+    try:
+        while not stop_event.is_set():
             command = voice_input.listen_for_command()
+
+            if stop_event.is_set():
+                break
 
             if command is None:
                 continue
 
             command = command.strip().lower()
 
-            # Stop the assistant only when explicitly requested.
-            # 'stop music' should be handled as a media command.
             if command in {"exit", "exit assistant", "quit"}:
                 print("Assistant stopped.")
+                stop_event.set()
                 break
 
             print(f"Recognized command: {command}")
-            handler.handle(command)
 
-        except KeyboardInterrupt:
-            print("\nAssistant stopped.")
-            break
-        except NotImplementedError as error:
-            print(f"Media action not implemented: {error}")
-        except Exception as error:
-            print(f"An error occurred: {error}")
+            try:
+                handler.handle(command)
+            except NotImplementedError as error:
+                print(f"Media action not implemented: {error}")
+            except Exception as error:
+                print(f"Command execution error: {error}")
+
+    except KeyboardInterrupt:
+        print("\nKeyboard interrupt received. Stopping assistant...")
+        stop_event.set()
+
+    finally:
+        stop_event.set()
+        print("Voice assistant stopped.")
 
 
 def run_gesture_controls(handler, feedback, stop_event):
@@ -68,9 +76,7 @@ def run_gesture_controls(handler, feedback, stop_event):
             ok, frame = gesture_control.camera.read()
 
             if not ok:
-                feedback.say(
-                    "Unable to read from webcam. Gesture controls stopped."
-                )
+                print("Unable to read webcam. Gesture controls stopped.")
                 break
 
             frame = cv2.flip(frame, 1)
@@ -80,20 +86,12 @@ def run_gesture_controls(handler, feedback, stop_event):
                 command = gesture_mapping.map_gesture(gesture)
 
                 if command:
-                    feedback.say(
-                        f"Gesture detected: "
-                        f"{gesture.replace('_', ' ')} -> {command}"
-                    )
+                    print(f"Gesture detected: {gesture} -> {command}")
 
                     try:
                         handler.handle(command)
-                    except NotImplementedError:
-                        feedback.say(
-                            f"'{command}' is mapped, but its media action "
-                            "has not been implemented yet."
-                        )
                     except Exception as error:
-                        feedback.say(f"Gesture command error: {error}")
+                        print(f"Gesture command error: {error}")
 
             if gesture_control.show_window:
                 preview = gesture_control.draw_feedback(frame, gesture)
@@ -103,7 +101,7 @@ def run_gesture_controls(handler, feedback, stop_event):
                     break
 
     except Exception as error:
-        feedback.say(f"Gesture controls unavailable: {error}")
+        print(f"Gesture controls unavailable: {error}")
 
     finally:
         if gesture_control is not None:
@@ -112,7 +110,13 @@ def run_gesture_controls(handler, feedback, stop_event):
             except Exception as error:
                 print(f"Error closing gesture controls: {error}")
 
-        stop_event.set()
+        try:
+            import cv2
+            cv2.destroyAllWindows()
+        except Exception:
+            pass
+
+        print("Gesture controls stopped.")
 
 
 def main():
@@ -134,14 +138,16 @@ def main():
     gesture_thread.start()
 
     try:
-        run_assistant(voice_input, handler)
+        run_assistant(voice_input, handler, stop_event)
 
     except KeyboardInterrupt:
-        print("\nAssistant stopped.")
+        print("\nStopping assistant...")
+        stop_event.set()
 
     finally:
         stop_event.set()
-        gesture_thread.join(timeout=2)
+        gesture_thread.join(timeout=3)
+        print("Application shutdown complete.")
 
 
 if __name__ == "__main__":
