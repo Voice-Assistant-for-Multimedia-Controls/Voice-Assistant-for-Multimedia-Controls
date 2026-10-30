@@ -44,3 +44,13 @@ class FeedbackService:
     def report(self, success: bool, success_message: str, failure_message: str) -> str:
              """Speak the success or failure message depending on the result."""
              return self.say(success_message if success else failure_message)
+
+
+    def track_changed(self, direction: str, success: bool) -> str:
+        """Give feedback after a next/previous track request."""
+        if direction not in ("next", "previous"):
+            return ""
+
+        if success:
+            return self.say(f"Playing {direction} track")
+        return self.say(f"Sorry, I couldn't go to the {direction} track")
