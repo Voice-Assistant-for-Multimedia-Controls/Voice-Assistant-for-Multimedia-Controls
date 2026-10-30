@@ -104,3 +104,17 @@ controller and the text-to-speech engine, so they run without audio
 or a microphone.
 
 `FeedbackService.track_changed(direction, success)` speaks the result of a next/previous track request.
+
+## Supported voice commands
+
+| Action | Phrases |
+|---|---|
+| Play | play, play music, play the music |
+| Resume | resume, resume music |
+| Pause | pause, pause music, stop, stop music |
+| Next track | next, next track, next song, play next, play next song |
+| Previous track | previous, previous track, previous song, play previous, play previous song |
+| Volume | volume up, volume down |
+
+Commands must be spoken as the complete phrase. Anything else is
+reported as unsupported and no action is taken.
