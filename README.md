@@ -102,3 +102,5 @@ voice rate and volume and a success/failure `report()` helper.
 Added unit tests for both modules in `tests/`. The tests mock the
 controller and the text-to-speech engine, so they run without audio
 or a microphone.
+
+`FeedbackService.track_changed(direction, success)` speaks the result of a next/previous track request.

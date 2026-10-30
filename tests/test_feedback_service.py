@@ -63,5 +63,27 @@ class TestFeedbackService(unittest.TestCase):
         self.assertEqual(service.report(False, "Done", "Failed"), "Failed")
 
 
+    @patch("src.feedback_service.pyttsx3.init")
+    def test_track_changed_success_and_failure(self, mock_init):
+        mock_init.return_value = MagicMock()
+        service = FeedbackService()
+
+        self.assertEqual(service.track_changed("next", True), "Playing next track")
+        self.assertEqual(
+            service.track_changed("previous", False),
+            "Sorry, I couldn't go to the previous track",
+        )
+
+    @patch("src.feedback_service.pyttsx3.init")
+    def test_track_changed_ignores_unknown_direction(self, mock_init):
+        mock_init.return_value = MagicMock()
+        service = FeedbackService()
+
+        self.assertEqual(service.track_changed("sideways", True), "")
+
+
 if __name__ == "__main__":
     unittest.main()
+
+
+    
