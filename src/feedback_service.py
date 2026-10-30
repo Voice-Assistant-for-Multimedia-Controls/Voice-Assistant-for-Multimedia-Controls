@@ -40,3 +40,7 @@ class FeedbackService:
                 print(f"Assistant: Could not speak message ({error})")
 
         return message
+
+    def report(self, success: bool, success_message: str, failure_message: str) -> str:
+             """Speak the success or failure message depending on the result."""
+             return self.say(success_message if success else failure_message)
