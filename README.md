@@ -1,6 +1,6 @@
 # Voice Assistant for Multimedia Controls — Team Starter
 
-[![CI](https://github.com/Voice-Assistant-for-Multimedia-Controls/Voice-Assistant-for-Multimedia-Controls/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Voice-Assistant-for-Multimedia-Controls/Voice-Assistant-for-Multimedia-Controls/actions/workflows/ci.yml)
+[![CI/CD](https://github.com/Voice-Assistant-for-Multimedia-Controls/Voice-Assistant-for-Multimedia-Controls/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Voice-Assistant-for-Multimedia-Controls/Voice-Assistant-for-Multimedia-Controls/actions/workflows/ci.yml)
 
 This repository contains the shared **starter scaffold** only. It intentionally
 does not implement the project features. Team members should complete their
