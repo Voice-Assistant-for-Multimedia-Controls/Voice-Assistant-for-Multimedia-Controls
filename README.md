@@ -120,6 +120,22 @@ responds correctly to keyboard shortcuts and system media keys. CI cannot
 confirm physical-device availability, audio quality, camera image quality,
 media-player behavior, or hardware-specific driver issues.
 
+## Shreedhar R — CI/CD pipeline (US-16)
+
+Added the GitHub Actions CI workflow in `.github/workflows/ci.yml`. It runs on
+pushes to `main` and pull requests targeting `main`, checks Python syntax and
+critical lint errors, verifies formatting, runs the full unittest suite, runs
+smoke tests, and uploads a coverage report. The README also includes a badge
+linking to the workflow.
+
+Added hardware-free tests that mock microphone input and webcam capture, and
+updated software-operation tests to mock media-key and window interactions.
+The tests can run in CI without a microphone, webcam, speakers, or real key
+presses. Documented which device-dependent behaviors still need manual
+verification. A separate, manually dispatched/scheduled hardware-validation
+workflow requires a configured self-hosted Windows runner with devices
+attached; it is not part of the standard pull-request checks.
+
 ## Shrinivas S J — track navigation and feedback
 
 Implemented next/previous track navigation routed through the shared
