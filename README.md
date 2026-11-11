@@ -124,9 +124,9 @@ media-player behavior, or hardware-specific driver issues.
 
 Added the GitHub Actions CI workflow in `.github/workflows/ci.yml`. It runs on
 pushes to `main` and pull requests targeting `main`, checks Python syntax and
-critical lint errors, verifies formatting, runs the full unittest suite, runs
-smoke tests, and uploads a coverage report. The README also includes a badge
-linking to the workflow.
+critical lint errors, runs the full unittest suite, runs smoke tests, and
+uploads a coverage report. The README also includes a badge linking to the
+workflow.
 
 Added hardware-free tests that mock microphone input and webcam capture, and
 updated software-operation tests to mock media-key and window interactions.
