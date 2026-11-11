@@ -1,5 +1,7 @@
 # Voice Assistant for Multimedia Controls — Team Starter
 
+[![CI](https://github.com/Voice-Assistant-for-Multimedia-Controls/Voice-Assistant-for-Multimedia-Controls/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Voice-Assistant-for-Multimedia-Controls/Voice-Assistant-for-Multimedia-Controls/actions/workflows/ci.yml)
+
 This repository contains the shared **starter scaffold** only. It intentionally
 does not implement the project features. Team members should complete their
 assigned TODOs in separate branches and raise pull requests for review.
@@ -92,6 +94,32 @@ Install the project's listed dependencies and run the assistant:
 python -m pip install -r requirements.txt
 python main.py
 ```
+
+## CI/CD Pipeline and Known Limitations
+
+GitHub Actions runs the project's unit tests automatically to catch regressions
+before changes are merged. The workflow is defined in
+`.github/workflows/ci.yml` and runs on pushes to `main` and pull requests
+targeting `main`. It uses a GitHub-hosted Windows runner with Python 3.11,
+installs dependencies from `requirements.txt`, and executes
+`python -m unittest discover -v`. A failed test causes the workflow check to
+fail on the pull request.
+
+The automated tests use mocks instead of physical devices: microphone input
+and webcam capture are mocked in `tests/test_hardware_free_operations.py`,
+speech output is mocked in `tests/test_feedback_service.py`, and media-key
+presses and desktop-window lookup are mocked in
+`tests/test_software_operations.py`. The tests verify application behavior
+against those simulated interfaces without opening a microphone, camera, or
+speaker or sending real media-key actions.
+
+Manual testing on a real Windows computer is still needed to verify microphone
+and online speech-recognition behavior, webcam permissions and gesture
+recognition, audible text-to-speech output, and whether the active media player
+responds correctly to keyboard shortcuts and system media keys. CI cannot
+confirm physical-device availability, audio quality, camera image quality,
+media-player behavior, or hardware-specific driver issues.
+
 ## Shrinivas S J — track navigation and feedback
 
 Implemented next/previous track navigation routed through the shared
