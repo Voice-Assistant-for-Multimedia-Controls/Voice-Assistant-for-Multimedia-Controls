@@ -54,7 +54,7 @@ if the team agrees to a documented change.
 - Record deviations from those documents and explain them in the final demo.
 - Add only the dependencies actually selected and used by the team.
 
-## Shreedhar R — completed volume-control contribution
+## Shreedhar R — volume control and CI/CD pipeline
 
 Implemented the assigned volume-up and volume-down commands as host-computer
 media-key actions using PyAutoGUI. The existing command handler routes spoken
@@ -67,6 +67,13 @@ Added automated tests for both key mappings and repeated commands. The
 assistant was also tested with a live microphone: it recognized "volume up"
 and "volume down" and dispatched the corresponding media keys. The tests do
 not independently verify the Windows volume indicator or audible output.
+
+Shreedhar also implemented the project CI/CD workflow in
+`.github/workflows/ci.yml`, covering code checks, unit tests, smoke tests, and
+coverage reporting for the main branch. The repository also includes the
+hardware-validation workflow in `.github/workflows/hardware-validation.yml`
+for device-dependent validation on a self-hosted Windows runner when the
+camera, microphone, and speakers are available.
 
 ## Software-only communication and continuous-operation checks
 
@@ -135,6 +142,10 @@ presses. Documented which device-dependent behaviors still need manual
 verification. A separate, manually dispatched/scheduled hardware-validation
 workflow requires a configured self-hosted Windows runner with devices
 attached; it is not part of the standard pull-request checks.
+
+This work complements the separate volume-control contribution above, which
+implements the host-level volume up/down media-key actions and the related
+gesture and voice integration covered in US-11.
 
 ## Shrinivas S J — track navigation and feedback
 
