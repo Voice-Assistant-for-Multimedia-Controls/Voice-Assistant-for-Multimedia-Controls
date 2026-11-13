@@ -1,6 +1,8 @@
 
 """Command handling module — task owner: Prajwal GT."""
 
+import re
+
 
 class CommandHandler:
     """Map recognized voice commands to multimedia actions."""
@@ -51,13 +53,23 @@ class CommandHandler:
 
         # Volume
         "volume up": "volume_up",
+        "volume increase": "volume_up",
         "increase volume": "volume_up",
         "increase the volume": "volume_up",
         "turn up volume": "volume_up",
+        "turn up the volume": "volume_up",
+        "turn the volume up": "volume_up",
+        "make it louder": "volume_up",
+        "louder": "volume_up",
         "volume down": "volume_down",
+        "volume decrease": "volume_down",
         "decrease volume": "volume_down",
         "decrease the volume": "volume_down",
         "turn down volume": "volume_down",
+        "turn down the volume": "volume_down",
+        "turn the volume down": "volume_down",
+        "make it quieter": "volume_down",
+        "quieter": "volume_down",
     }
 
     def __init__(self, controller, feedback) -> None:
@@ -67,7 +79,12 @@ class CommandHandler:
     @staticmethod
     def normalize(command: str) -> str:
         """Normalize recognized speech before matching."""
-        return " ".join((command or "").lower().strip().split())
+        if command is None:
+            return ""
+        normalized = command.lower().strip()
+        normalized = re.sub(r"[_\-]+", " ", normalized)
+        normalized = re.sub(r"[^a-z0-9 ]+", " ", normalized)
+        return " ".join(normalized.split())
 
     def handle(self, command: str):
         """Recognize a command and execute its controller action."""
