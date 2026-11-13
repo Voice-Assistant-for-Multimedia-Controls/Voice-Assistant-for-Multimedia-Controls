@@ -11,9 +11,12 @@ class GestureMappingTests(unittest.TestCase):
         expected = {
             "open_palm": "play",
             "open palm": "play",
+            "openpalm": "play",
             "fist": "pause",
             "thumbs_up": "volume up",
             "thumbs down": "volume down",
+            "thumbsup": "volume up",
+            "thumbsdown": "volume down",
         }
         for gesture, command in expected.items():
             with self.subTest(gesture=gesture):
@@ -22,6 +25,7 @@ class GestureMappingTests(unittest.TestCase):
     def test_case_and_whitespace_are_normalized(self):
         self.assertEqual(self.mapping.map_gesture("  OPEN PALM "), "play")
         self.assertEqual(self.mapping.map_gesture("Thumbs   Up"), "volume up")
+        self.assertEqual(self.mapping.map_gesture("thumbs-up"), "volume up")
 
     def test_unknown_or_invalid_gestures_are_ignored(self):
         for gesture in (None, "", "wave", 42):

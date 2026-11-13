@@ -56,6 +56,31 @@ class SoftwareOperationsTests(unittest.TestCase):
             ],
         )
 
+    def test_volume_commands_accept_common_voice_variants(self):
+        handler = CommandHandler(MultimediaController(volume_control=VolumeControl()), Mock())
+
+        for command in (
+            "volume up",
+            "turn up the volume",
+            "make it louder",
+            "volume down",
+            "turn down the volume",
+            "make it quieter",
+        ):
+            handler.handle(command)
+
+        self.assertEqual(
+            [call.args[0] for call in self.media_keys.press.call_args_list],
+            [
+                "volumeup",
+                "volumeup",
+                "volumeup",
+                "volumedown",
+                "volumedown",
+                "volumedown",
+            ],
+        )
+
     def test_continuous_loop_processes_repeated_commands_until_exit(self):
         commands = iter(
             [
