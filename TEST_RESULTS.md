@@ -43,3 +43,22 @@
   were sent. An unsupported phrase was rejected without an action.
 - Limitation: The Windows volume indicator and audible output were not
   independently verified.
+
+
+## GUI Integration and CI Verification — 2026-11-16
+
+### Automated verification
+
+- Commit: [Fix GUI smoke coverage and declare Pillow](https://github.com/Voice-Assistant-for-Multimedia-Controls/Voice-Assistant-for-Multimedia-Controls/commit/b59e15567dc0602fbfe1058dee2f30202bb48abc).
+- Environment: GitHub Actions, Windows, Python 3.11.
+- Python syntax compilation: passed.
+- Ruff critical-error checks: passed.
+- Full unit test suite (`python -m unittest discover -v`): passed.
+- Dedicated smoke tests (`python -m unittest tests.test_smoke -v`): passed. These cover the default GUI launch through a mocked GUI module and the CLI worker startup.
+- Coverage job: passed; the coverage report artifact was uploaded.
+
+### Manual and hardware verification
+
+- No live microphone, webcam, speech output, or media-player behavior was tested by this CI run.
+- GUI layout and camera preview have not been manually verified on a user's desktop.
+- Pillow is declared in `requirements.txt` for the Tkinter camera preview.
