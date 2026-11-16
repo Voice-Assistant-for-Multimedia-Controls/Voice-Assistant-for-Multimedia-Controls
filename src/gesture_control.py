@@ -32,9 +32,9 @@ class GestureControl:
     """Capture camera frames and recognize stable, configured gestures.
 
     ``recognize_gesture`` returns one of ``open_palm``, ``fist``,
-    ``thumbs_up`` or ``thumbs_down`` after enough votes in a short frame
-    window. It returns ``None`` otherwise and requires a neutral interval to
-    re-arm after a command.
+    ``thumbs_up``, ``thumbs_down``, ``peace_sign`` or ``point_up`` after
+    enough votes in a short frame window. It returns ``None`` otherwise and
+    requires a neutral interval to re-arm after a command.
     """
 
     def __init__(
@@ -249,6 +249,26 @@ class GestureControl:
         )
         thumb_spread = cls._distance(thumb_tip, index_mcp, aspect_ratio) / palm_width
         thumb_extended = thumb_ip_angle >= 130 and thumb_spread >= 0.55
+
+        # V/peace sign: index and middle fingers extended, ring and pinky curled.
+        if (
+            states[0] == "extended"
+            and states[1] == "extended"
+            and states[2] == "curled"
+            and states[3] == "curled"
+        ):
+            return "peace_sign"
+
+        # Index finger pointing up: index extended and remaining fingers curled.
+        index_points_up = float(points[8].y) < float(points[5].y) - 0.04
+        if (
+            states[0] == "extended"
+            and states[1] == "curled"
+            and states[2] == "curled"
+            and states[3] == "curled"
+            and index_points_up
+        ):
+            return "point_up"
 
         # Open palm requires every long finger to be clearly extended and the
         # thumb to be separated from the palm, reducing false plays from waves.

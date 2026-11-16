@@ -384,7 +384,8 @@ class AssistantGUI:
 
     def _build_gesture_card(self, parent: tk.Widget) -> None:
         _, body = self._card(
-            parent, "Gesture controls", "Use a webcam to control playback and volume."
+            parent, "Gesture controls",
+            "Use a webcam to control playback, track navigation and volume."
         )
         config = tk.Frame(body, bg=PANEL)
         config.pack(fill="x")
@@ -416,13 +417,19 @@ class AssistantGUI:
             ("FIST", "Pause", TEXT),
             ("THUMBS UP", "Volume +", GREEN),
             ("THUMBS DOWN", "Volume −", RED),
+            ("PEACE SIGN", "Next song", ACCENT),
+            ("POINT UP", "Previous song", BLUE),
         ]
+        for column in range(3):
+            mapping.columnconfigure(column, weight=1, uniform="gesture-map")
         for index, (label, action, color) in enumerate(mappings):
-            mapping.columnconfigure(index, weight=1, uniform="gesture-map")
+            row_index = index // 3
+            column_index = index % 3
             chip = tk.Frame(mapping, bg=PANEL_ALT)
             chip.grid(
-                row=0, column=index, sticky="ew",
-                padx=(0 if index == 0 else 4, 0),
+                row=row_index, column=column_index, sticky="ew",
+                padx=(0 if column_index == 0 else 4, 0),
+                pady=(0 if row_index == 0 else 4, 0),
             )
             tk.Label(
                 chip, text=label, bg=PANEL_ALT, fg=MUTED,

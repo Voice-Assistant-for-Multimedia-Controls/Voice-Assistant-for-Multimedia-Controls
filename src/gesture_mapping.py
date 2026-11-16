@@ -22,6 +22,12 @@ class GestureMapping:
         "thumbs_down": "volume down",
         "thumbs down": "volume down",
         "thumbsdown": "volume down",
+        "peace sign": "next song",
+        "v sign": "next song",
+        "victory": "next song",
+        "point up": "previous song",
+        "index finger": "previous song",
+        "pointing up": "previous song",
     }
 
     def map_gesture(self, gesture: str):

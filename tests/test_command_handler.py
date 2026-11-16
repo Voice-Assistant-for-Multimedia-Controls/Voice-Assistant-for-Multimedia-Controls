@@ -67,14 +67,14 @@ class MultimediaCommandTests(unittest.TestCase):
     @patch.object(MultimediaController, "_youtube_key", return_value=False)
     def test_pause(self, mock_youtube, mock_press):
         self.handler.handle("pause")
-        mock_press.assert_called_once_with("pause")
+        mock_press.assert_called_once_with("playpause")
         print("PAUSE TEST: PASSED")
 
     @patch("src.multimedia_controller.pyautogui.press")
     @patch.object(MultimediaController, "_youtube_key", return_value=False)
     def test_resume(self, mock_youtube, mock_press):
         self.handler.handle("resume")
-        mock_press.assert_called_once_with("play")
+        mock_press.assert_called_once_with("playpause")
         print("RESUME TEST: PASSED")
 
 
