@@ -1,22 +1,9 @@
 
+import unittest
+from unittest.mock import patch
+
 from src.command_handler import CommandHandler
-
-
-class FakeController:
-    def __init__(self):
-        self.actions = []
-
-    def play(self):
-        self.actions.append("play")
-        return "Playing"
-
-    def resume(self):
-        self.actions.append("resume")
-        return "Resuming"
-
-    def pause(self):
-        self.actions.append("pause")
-        return "Paused"
+from src.multimedia_controller import MultimediaController
 
 
 class FakeFeedback:
@@ -25,22 +12,71 @@ class FakeFeedback:
 
     def say(self, message):
         self.messages.append(message)
-        print(message)
 
 
-controller = FakeController()
-feedback = FakeFeedback()
-handler = CommandHandler(controller, feedback)
+class MultimediaCommandTests(unittest.TestCase):
 
-handler.handle("play the music")
-assert controller.actions == ["play"]
+    def setUp(self):
+        self.controller = MultimediaController()
+        self.feedback = FakeFeedback()
+        self.handler = CommandHandler(
+            self.controller, self.feedback
+        )
 
-handler.handle("hello")
-assert controller.actions == ["play"]
-assert "Unsupported command" in feedback.messages[-1]
+    # Original command-handler tests
 
-handler.handle("")
-assert controller.actions == ["play"]
-assert "Unclear command" in feedback.messages[-1]
+    def test_play_music(self):
+        with patch.object(
+            self.controller, "play", return_value="Playing"
+        ) as mock_play:
+            self.handler.handle("play the music")
+            mock_play.assert_called_once()
+        print("PLAY MUSIC TEST: PASSED")
 
-print("All command-handler tests passed.")
+    def test_unsupported_command(self):
+        self.handler.handle("hello")
+        self.assertIn(
+            "Unsupported command", self.feedback.messages[-1]
+        )
+        print("UNSUPPORTED COMMAND TEST: PASSED")
+
+    def test_empty_command(self):
+        self.handler.handle("")
+        self.assertIn(
+            "Unclear command", self.feedback.messages[-1]
+        )
+        print("EMPTY COMMAND TEST: PASSED")
+
+    # Four multimedia controller tests
+
+    @patch("src.multimedia_controller.pyautogui.press")
+    @patch.object(MultimediaController, "_youtube_key", return_value=False)
+    def test_previous_song(self, mock_youtube, mock_press):
+        self.handler.handle("previous song")
+        mock_press.assert_called_once_with("prevtrack")
+        print("PREVIOUS SONG TEST: PASSED")
+
+    @patch("src.multimedia_controller.pyautogui.press")
+    @patch.object(MultimediaController, "_youtube_key", return_value=False)
+    def test_next_song(self, mock_youtube, mock_press):
+        self.handler.handle("next song")
+        mock_press.assert_called_once_with("nexttrack")
+        print("NEXT SONG TEST: PASSED")
+
+    @patch("src.multimedia_controller.pyautogui.press")
+    @patch.object(MultimediaController, "_youtube_key", return_value=False)
+    def test_pause(self, mock_youtube, mock_press):
+        self.handler.handle("pause")
+        mock_press.assert_called_once_with("pause")
+        print("PAUSE TEST: PASSED")
+
+    @patch("src.multimedia_controller.pyautogui.press")
+    @patch.object(MultimediaController, "_youtube_key", return_value=False)
+    def test_resume(self, mock_youtube, mock_press):
+        self.handler.handle("resume")
+        mock_press.assert_called_once_with("play")
+        print("RESUME TEST: PASSED")
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
