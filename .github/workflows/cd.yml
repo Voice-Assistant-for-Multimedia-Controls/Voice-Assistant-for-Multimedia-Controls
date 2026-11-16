@@ -1,0 +1,218 @@
+name: CD - Windows Release
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_run:
+    workflows:
+      - CI/CD
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Optional release tag, for example v1.0.5. Leave blank to auto-generate."
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-release-${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  build-package:
+    name: Build portable Windows package
+    if: >-
+      ${{
+        github.event_name == 'pull_request' ||
+        (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+        (
+          github.event_name == 'workflow_run' &&
+          github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.event == 'push' &&
+          github.event.workflow_run.head_branch == 'main'
+        )
+      }}
+    runs-on: windows-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out source commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install application and packaging dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller pyinstaller-hooks-contrib
+
+      - name: Validate source for manual release runs
+        if: github.event_name == 'workflow_dispatch'
+        shell: pwsh
+        run: |
+          python -m pip install ruff
+          python -m compileall -q src main.py
+          ruff check src tests main.py --select=E9,F63,F7,F82
+          python -m unittest discover -v
+          python -m unittest tests.test_smoke -v
+
+      - name: Verify required application files
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "main.py")) {
+            throw "main.py was not found."
+          }
+          if (-not (Test-Path "models/hand_landmarker.task")) {
+            throw "The MediaPipe hand-landmarker model is missing."
+          }
+
+      - name: Build portable Windows application
+        shell: pwsh
+        run: |
+          python -m PyInstaller `
+            --noconfirm `
+            --clean `
+            --windowed `
+            --onedir `
+            --name SonicAssistant `
+            --collect-all mediapipe `
+            --collect-all cv2 `
+            --collect-all pyttsx3 `
+            --collect-all comtypes `
+            --collect-all speech_recognition `
+            --collect-all pyautogui `
+            --collect-all pygetwindow `
+            --collect-submodules src `
+            --hidden-import pyttsx3.drivers.sapi5 `
+            --add-data "models/hand_landmarker.task;models" `
+            main.py
+
+      - name: Prepare portable release ZIP and checksum
+        shell: pwsh
+        run: |
+          $bundle = "dist/SonicAssistant"
+          $exe = Join-Path $bundle "SonicAssistant.exe"
+
+          if (-not (Test-Path $exe)) {
+            throw "PyInstaller did not produce SonicAssistant.exe."
+          }
+
+          $modelCandidates = @(
+            (Join-Path $bundle "_internal/models/hand_landmarker.task"),
+            (Join-Path $bundle "models/hand_landmarker.task")
+          )
+          if (-not ($modelCandidates | Where-Object { Test-Path $_ })) {
+            throw "The hand-landmarker model was not included in the packaged application."
+          }
+
+          @"
+          Sonic Multimedia Assistant - Windows x64
+
+          1. Extract the complete SonicAssistant folder.
+          2. Keep the SonicAssistant.exe and _internal folder together.
+          3. Double-click SonicAssistant.exe to start the application.
+          4. Allow microphone and camera access when Windows asks.
+
+          The application uses your computer's microphone, webcam, speakers,
+          and media controls. Voice recognition requires an internet connection.
+          "@ | Set-Content -Encoding UTF8 (Join-Path $bundle "README.txt")
+
+          $zip = "dist/SonicAssistant-Windows-x64.zip"
+          Compress-Archive -Path $bundle -DestinationPath $zip -CompressionLevel Optimal -Force
+
+          $hash = (Get-FileHash -Path $zip -Algorithm SHA256).Hash
+          "$hash  SonicAssistant-Windows-x64.zip" |
+            Set-Content -Encoding ASCII "dist/SonicAssistant-Windows-x64.sha256"
+
+      - name: Upload package for pull request validation
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: SonicAssistant-Windows-x64-preview
+          path: |
+            dist/SonicAssistant-Windows-x64.zip
+            dist/SonicAssistant-Windows-x64.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload package for release publishing
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: SonicAssistant-Windows-x64-release
+          path: |
+            dist/SonicAssistant-Windows-x64.zip
+            dist/SonicAssistant-Windows-x64.sha256
+          if-no-files-found: error
+          retention-days: 1
+
+  publish-release:
+    name: Publish GitHub Release
+    needs: build-package
+    if: >-
+      ${{
+        (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+        (
+          github.event_name == 'workflow_run' &&
+          github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.event == 'push' &&
+          github.event.workflow_run.head_branch == 'main'
+        )
+      }}
+    runs-on: windows-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Download packaged application
+        uses: actions/download-artifact@v4
+        with:
+          name: SonicAssistant-Windows-x64-release
+          path: release-assets
+
+      - name: Set release metadata
+        id: release_meta
+        shell: pwsh
+        env:
+          REQUESTED_TAG: ${{ inputs.release_tag }}
+          SOURCE_COMMIT: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          $tag = $env:REQUESTED_TAG
+          if ([string]::IsNullOrWhiteSpace($tag)) {
+            $tag = "v1.0.${{ github.run_number }}"
+          }
+          if ($tag -notmatch '^v\d+\.\d+\.\d+$') {
+            throw "Release tag must use semantic version format, for example v1.0.5."
+          }
+
+          "tag=$tag" >> $env:GITHUB_OUTPUT
+          "commit=$($env:SOURCE_COMMIT)" >> $env:GITHUB_OUTPUT
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release_meta.outputs.tag }}
+          name: Sonic Multimedia Assistant ${{ steps.release_meta.outputs.tag }}
+          target_commitish: ${{ steps.release_meta.outputs.commit }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+          files: |
+            release-assets/SonicAssistant-Windows-x64.zip
+            release-assets/SonicAssistant-Windows-x64.sha256

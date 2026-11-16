@@ -210,3 +210,10 @@ python main.py --cli
 ```
 
 Install the dependencies from `requirements.txt` before launching. The hand-landmarker model is included under `models/`.
+
+
+## Windows Continuous Delivery (CD)
+
+The separate `.github/workflows/cd.yml` workflow implements Windows release packaging. It starts only after the existing `CI/CD` workflow succeeds for a push to `main`. It builds a portable Windows x64 application with PyInstaller, includes the MediaPipe hand-landmarker model, and publishes a GitHub Release with the ZIP package and SHA-256 checksum.
+
+See [docs/windows-release.md](docs/windows-release.md) for automatic release behavior, manual release instructions, and how to run the packaged application. The release is a portable folder ZIP, not a signed installer; hardware access and online speech recognition still depend on the user's Windows PC and network.
