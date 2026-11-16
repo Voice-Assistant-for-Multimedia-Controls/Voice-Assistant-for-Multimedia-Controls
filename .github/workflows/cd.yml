@@ -95,9 +95,6 @@ jobs:
             --collect-all pygetwindow `
             --collect-submodules src `
             --hidden-import pyttsx3.drivers.sapi5 `
-            --hidden-import pythoncom `
-            --hidden-import pywintypes `
-            --hidden-import win32timezone `
             --add-data "models/hand_landmarker.task;models" `
             main.py
 
