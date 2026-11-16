@@ -2,11 +2,15 @@
 
 The Windows CD workflow is defined in `.github/workflows/cd.yml`.
 
+## Pull request package validation
+
+For every pull request targeting `main`, GitHub Actions builds the portable Windows x64 application and uploads the ZIP package and SHA-256 checksum as a temporary workflow artifact. This is a preview for validation; it does not publish a public GitHub Release.
+
 ## Automatic release
 
-1. A change is pushed or merged into `main`.
+1. A change is merged or pushed into `main`.
 2. The existing `CI/CD` workflow runs.
-3. Only when that workflow completes successfully for a push to `main`, the CD workflow starts.
+3. Only when that workflow succeeds for a push to `main`, the CD workflow starts.
 4. GitHub Actions builds a portable Windows x64 application with PyInstaller.
 5. The build bundles the MediaPipe hand-landmarker model.
 6. The workflow creates a GitHub Release containing:
@@ -17,7 +21,7 @@ The automatic release tag uses the form `v1.0.N`, where `N` is the CD workflow r
 
 ## Manual release
 
-The workflow can also be started from **Actions → CD - Windows Release → Run workflow**. An optional release tag can be supplied, for example `v1.0.5`. If left blank, the workflow generates a tag automatically.
+The workflow can also be started from **Actions → CD - Windows Release → Run workflow**, on the `main` branch. An optional release tag can be supplied, for example `v1.0.5`. If left blank, the workflow generates a tag automatically. A manual run also performs syntax, lint, unit, and smoke checks before packaging.
 
 ## Running a release
 
@@ -31,4 +35,4 @@ This is a portable Windows x64 build, not a signed installer. Microphone, webcam
 
 ## Permissions
 
-The workflow requests only `contents: write` so it can create a GitHub Release and attach the packaged files. It runs automatically only after a successful push-triggered CI run on `main`.
+The build job has read-only repository access. The separate release-publishing job requests `contents: write` only so it can create a GitHub Release and attach the packaged files.
