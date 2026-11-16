@@ -1,6 +1,9 @@
 name: CD - Windows Release
 
 on:
+  pull_request:
+    branches:
+      - main
   workflow_run:
     workflows:
       - CI/CD
@@ -16,19 +19,21 @@ on:
         type: string
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: windows-release-${{ github.event.workflow_run.head_sha || github.sha }}
+  group: windows-release-${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha || github.sha }}
   cancel-in-progress: false
 
 jobs:
-  build-and-release:
-    name: Build and publish Windows application
+  build-package:
+    name: Build portable Windows package
     if: >-
       ${{
+        github.event_name == 'pull_request' ||
         (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
         (
+          github.event_name == 'workflow_run' &&
           github.event.workflow_run.conclusion == 'success' &&
           github.event.workflow_run.event == 'push' &&
           github.event.workflow_run.head_branch == 'main'
@@ -38,10 +43,10 @@ jobs:
     timeout-minutes: 60
 
     steps:
-      - name: Check out the successful main commit
+      - name: Check out source commit
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha || github.sha }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -135,6 +140,52 @@ jobs:
           "$hash  SonicAssistant-Windows-x64.zip" |
             Set-Content -Encoding ASCII "dist/SonicAssistant-Windows-x64.sha256"
 
+      - name: Upload package for pull request validation
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: SonicAssistant-Windows-x64-preview
+          path: |
+            dist/SonicAssistant-Windows-x64.zip
+            dist/SonicAssistant-Windows-x64.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload package for release publishing
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: SonicAssistant-Windows-x64-release
+          path: |
+            dist/SonicAssistant-Windows-x64.zip
+            dist/SonicAssistant-Windows-x64.sha256
+          if-no-files-found: error
+          retention-days: 1
+
+  publish-release:
+    name: Publish GitHub Release
+    needs: build-package
+    if: >-
+      ${{
+        (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+        (
+          github.event_name == 'workflow_run' &&
+          github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.event == 'push' &&
+          github.event.workflow_run.head_branch == 'main'
+        )
+      }}
+    runs-on: windows-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Download packaged application
+        uses: actions/download-artifact@v4
+        with:
+          name: SonicAssistant-Windows-x64-release
+          path: release-assets
+
       - name: Set release metadata
         id: release_meta
         shell: pwsh
@@ -163,5 +214,5 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            dist/SonicAssistant-Windows-x64.zip
-            dist/SonicAssistant-Windows-x64.sha256
+            release-assets/SonicAssistant-Windows-x64.zip
+            release-assets/SonicAssistant-Windows-x64.sha256
