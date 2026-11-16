@@ -194,3 +194,19 @@ Live microphone testing confirmed recognition of the "play music" command and di
 
 Commands must be spoken as the complete phrase. Anything else is
 reported as unsupported and no action is taken.
+
+## Desktop GUI
+
+The desktop interface starts by default:
+
+```powershell
+python main.py
+```
+
+Use the **Voice** and **Gesture controls** buttons to enable either input. The gesture preview is shown in the dashboard, and the camera index can be selected in the interface. To use the original terminal interface instead, run:
+
+```powershell
+python main.py --cli
+```
+
+Install the dependencies from `requirements.txt` before launching. The hand-landmarker model is included under `models/`.

@@ -2,6 +2,7 @@
 """Run voice commands and webcam gesture controls concurrently."""
 
 import threading
+import sys
 
 from src.command_handler import CommandHandler
 from src.feedback_service import FeedbackService
@@ -119,8 +120,8 @@ def run_gesture_controls(handler, feedback, stop_event):
         print("Gesture controls stopped.")
 
 
-def main():
-    """Initialize and run voice and gesture controls."""
+def run_cli():
+    """Initialize and run voice and gesture controls in the terminal."""
     feedback = FeedbackService()
     controller = MultimediaController()
     handler = CommandHandler(controller, feedback)
@@ -148,6 +149,16 @@ def main():
         stop_event.set()
         gesture_thread.join(timeout=3)
         print("Application shutdown complete.")
+
+
+def main():
+    """Launch the desktop GUI, or the terminal app with --cli."""
+    if "--cli" in sys.argv:
+        run_cli()
+        return
+
+    from gui import main as launch_gui
+    launch_gui()
 
 
 if __name__ == "__main__":
