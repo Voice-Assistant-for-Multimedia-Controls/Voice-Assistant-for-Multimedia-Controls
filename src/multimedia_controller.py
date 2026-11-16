@@ -49,19 +49,17 @@ class MultimediaController:
             return False
 
     def play(self):
-        if self._youtube_key("k"):
-            return "YouTube play/pause shortcut sent."
-        pyautogui.press("play")
-        return "Play media key sent."
+        """Toggle the active media session, including background browsers."""
+        pyautogui.press("playpause")
+        return "Playback toggle media key sent."
 
     def resume(self):
         return self.play()
 
     def pause(self):
-        if self._youtube_key("k"):
-            return "YouTube play/pause shortcut sent."
-        pyautogui.press("pause")
-        return "Pause media key sent."
+        """Toggle the active media session, including background browsers."""
+        pyautogui.press("playpause")
+        return "Playback toggle media key sent."
 
     def next_track(self):
         if self._youtube_key("n", shift=True):

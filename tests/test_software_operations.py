@@ -46,9 +46,9 @@ class SoftwareOperationsTests(unittest.TestCase):
         self.assertEqual(
             [call.args[0] for call in self.media_keys.press.call_args_list],
             [
-                "play",
-                "play",
-                "pause",
+                "playpause",
+                "playpause",
+                "playpause",
                 "nexttrack",
                 "prevtrack",
                 "volumeup",
@@ -106,12 +106,12 @@ class SoftwareOperationsTests(unittest.TestCase):
         self.assertEqual(
             [call.args[0] for call in self.media_keys.press.call_args_list],
             [
-                "play",
+                "playpause",
                 "volumeup",
                 "volumeup",
                 "nexttrack",
                 "prevtrack",
-                "pause",
+                "playpause",
             ],
         )
         self.assertEqual(voice_input.listen_for_command.call_count, 8)
