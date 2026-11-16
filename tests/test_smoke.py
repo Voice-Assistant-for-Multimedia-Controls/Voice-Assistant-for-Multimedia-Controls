@@ -1,3 +1,4 @@
+import sys
 import threading
 import unittest
 from unittest import mock
@@ -17,7 +18,18 @@ class TestSmoke(unittest.TestCase):
         self.assertTrue(stop_event.is_set())
         handler.handle.assert_any_call("play music")
 
-    def test_main_initializes_worker_thread(self):
+    def test_main_launches_gui_by_default(self):
+        gui_main = mock.Mock()
+        fake_gui = mock.Mock(main=gui_main)
+
+        with mock.patch.dict("sys.modules", {"gui": fake_gui}), \
+             mock.patch.object(sys, "argv", ["main.py"]):
+            import main
+            main.main()
+
+        gui_main.assert_called_once()
+
+    def test_main_cli_initializes_worker_thread(self):
         with mock.patch("main.FeedbackService"), \
              mock.patch("main.MultimediaController"), \
              mock.patch("main.CommandHandler"), \
@@ -28,7 +40,7 @@ class TestSmoke(unittest.TestCase):
             thread_mock.return_value = thread
 
             import main
-            main.main()
+            main.run_cli()
 
         thread.start.assert_called_once()
         thread.join.assert_called_once_with(timeout=3)
