@@ -21,7 +21,7 @@ The workflow can also be started from **Actions → CD - Windows Release → Run
 
 ## Running a release
 
-1. Download `SonicAssistant-Windows-x64.zip) from the GitHub Release.
+1. Download `SonicAssistant-Windows-x64.zip` from the GitHub Release.
 2. Extract the complete `SonicAssistant` folder.
 3. Keep `SonicAssistant.exe` and the `_internal` folder together.
 4. Run `SonicAssistant.exe`.
