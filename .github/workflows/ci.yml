@@ -126,7 +126,9 @@ jobs:
       - name: Generate branch coverage reports
         run: |
           coverage run --branch -m unittest discover -v
-          coverage report -m | Out-File -FilePath coverage-summary.txt -Encoding utf8
+          coverage json -o coverage.json
+          python scripts/write_coverage_summary.py coverage.json coverage-summary.txt
+          coverage report -m
           coverage html --directory htmlcov
           coverage xml -o coverage.xml
 
@@ -137,6 +139,7 @@ jobs:
           name: coverage-report
           path: |
             coverage.xml
+            coverage.json
             coverage-summary.txt
             htmlcov/
           if-no-files-found: warn
