@@ -64,10 +64,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
-          python -m pip install unittest-xml-reporting
 
-      - name: Run unit tests and generate JUnit XML
-        run: python -m xmlrunner discover -o test-results
+      - name: Run unit tests and generate one JUnit XML report
+        run: python scripts/run_tests_with_junit.py --output test-results/junit-results.xml
 
       - name: Upload JUnit test results
         if: always()
